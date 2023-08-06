@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	npguard "github.com/np-guard/netpol-analyzer/pkg/netpol/connlist"
+	npguardUtil "github.com/np-guard/netpol-analyzer/pkg/netpol/eval"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/roxctl/common/npg"
 )
@@ -16,13 +17,13 @@ const (
 )
 
 type netpolAnalyzer interface {
-	ConnlistFromDirPath(dirPath string) ([]npguard.Peer2PeerConnection, error)
+	ConnlistFromDirPath(dirPath string) ([]npguard.Peer2PeerConnection, []npguardUtil.Peer, error)
 	ConnectionsListToString(conns []npguard.Peer2PeerConnection) (string, error)
 	Errors() []npguard.ConnlistError
 }
 
 func (cmd *analyzeNetpolCommand) analyzeNetpols(analyzer netpolAnalyzer) error {
-	conns, err := analyzer.ConnlistFromDirPath(cmd.inputFolderPath)
+	conns, _, err := analyzer.ConnlistFromDirPath(cmd.inputFolderPath)
 	if err != nil {
 		return errors.Wrap(err, "error in connectivity analysis")
 	}
