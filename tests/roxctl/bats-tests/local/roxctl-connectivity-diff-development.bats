@@ -23,7 +23,7 @@ diff_tests_dir="${BATS_TEST_DIRNAME}/../../../../roxctl/connectivity-diff/testda
 
 @test "roxctl-development connectivity-diff generates conns diff report between resources from two directories" {
   dir1="${diff_tests_dir}/acs-security-demos/"
-  dir2="${diff_tests_dir}/acs-security-demos-new/"
+  dir2="${diff_tests_dir}/acs-security-demos-new-version/"
   # assert files exist in dir1
   assert_file_exist "${dir1}/backend/catalog/deployment.yaml"
   assert_file_exist "${dir1}/backend/checkout/configmap.yaml"
@@ -52,15 +52,24 @@ diff_tests_dir="${BATS_TEST_DIRNAME}/../../../../roxctl/connectivity-diff/testda
   assert_file_exist "${dir2}/backend/recommendation/deployment.yaml"
   assert_file_exist "${dir2}/backend/reports/configmap.yaml"
   assert_file_exist "${dir2}/backend/reports/deployment.yaml"
+  assert_file_exist "${dir2}/backend/namespace.yaml"
   assert_file_exist "${dir2}/backend/shipping/deployment.yaml"
-  assert_file_exist "${dir2}/external/new_deployment.yaml"
   assert_file_exist "${dir2}/frontend/asset-cache/deployment.yaml"
   assert_file_exist "${dir2}/frontend/asset-cache/route.yaml"
+  assert_file_exist "${dir2}/frontend/blog/deployment.yaml"
+  assert_file_exist "${dir2}/frontend/blog/route.yaml"
+  assert_file_exist "${dir2}/frontend/namespace.yaml"
   assert_file_exist "${dir2}/frontend/webapp/configmap.yaml"
   assert_file_exist "${dir2}/frontend/webapp/deployment.yaml"
   assert_file_exist "${dir2}/frontend/webapp/route.yaml"
   assert_file_exist "${dir2}/payments/gateway/deployment.yaml"
+  assert_file_exist "${dir2}/payments/mastercard-processor/deployment.yaml"
   assert_file_exist "${dir2}/payments/visa-processor/deployment.yaml"
+  assert_file_exist "${dir2}/payments/visa-processor-v2/deployment.yaml"
+  assert_file_exist "${dir2}/payments/namespace.yaml"
+  assert_file_exist "${dir2}/zeroday/deployment.yaml"
+  assert_file_exist "${dir2}/zeroday/namespace.yaml"
+  assert_file_exist "${dir2}/zeroday/route.yaml"
   assert_file_exist "${dir2}/acs_netpols.yaml"
   echo "Writing diff report to ${ofile}" >&3
   run roxctl-development connectivity-diff "${dir1}" "${dir2}"
@@ -69,18 +78,8 @@ diff_tests_dir="${BATS_TEST_DIRNAME}/../../../../roxctl/connectivity-diff/testda
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
     # partial is used to filter WARN and INFO messages
-  assert_output --partial 'source: backend/reports[Deployment], destination: backend/catalog[Deployment], dir1:  TCP 8080, dir2: TCP 9080, diff-type: changed
-source: 0.0.0.0-255.255.255.255, destination: external/unicorn[Deployment], dir1:  No Connections, dir2: All Connections, diff-type: added (workload external/unicorn[Deployment] added)
-source: backend/checkout[Deployment], destination: external/unicorn[Deployment], dir1:  No Connections, dir2: UDP 5353, diff-type: added (workload external/unicorn[Deployment] added)
-source: backend/recommendation[Deployment], destination: external/unicorn[Deployment], dir1:  No Connections, dir2: UDP 5353, diff-type: added (workload external/unicorn[Deployment] added)
-source: backend/reports[Deployment], destination: external/unicorn[Deployment], dir1:  No Connections, dir2: UDP 5353, diff-type: added (workload external/unicorn[Deployment] added)
-source: external/unicorn[Deployment], destination: 0.0.0.0-255.255.255.255, dir1:  No Connections, dir2: All Connections, diff-type: added (workload external/unicorn[Deployment] added)
-source: external/unicorn[Deployment], destination: frontend/webapp[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload external/unicorn[Deployment] added)
-source: frontend/webapp[Deployment], destination: external/unicorn[Deployment], dir1:  No Connections, dir2: UDP 5353, diff-type: added (workload external/unicorn[Deployment] added)
-source: payments/gateway[Deployment], destination: external/unicorn[Deployment], dir1:  No Connections, dir2: UDP 5353, diff-type: added (workload external/unicorn[Deployment] added)
-source: frontend/webapp[Deployment], destination: backend/shipping[Deployment], dir1:  TCP 8080, dir2: No Connections, diff-type: removed
-source: payments/gateway[Deployment], destination: payments/mastercard-processor[Deployment], dir1:  TCP 8080, dir2: No Connections, diff-type: removed (workload payments/mastercard-processor[Deployment] removed)
-source: {ingress-controller}, destination: frontend/asset-cache[Deployment], dir1:  TCP 8080, dir2: No Connections, diff-type: removed'
-  # a warn added by np-guard analysis
-assert_output --partial 'Route resource frontend/asset-cache specified workload frontend/asset-cache[Deployment] as a backend, but network policies are blocking ingress connections from an arbitrary in-cluster source to this workload.Connectivity map will not include a possibly allowed connection between the ingress controller and this workload.'
+  assert_output --partial 'Connectivity diff:
+source: payments/gateway[Deployment], destination: payments/visa-processor-v2[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload payments/visa-processor-v2[Deployment] added)
+source: {ingress-controller}, destination: frontend/blog[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload frontend/blog[Deployment] added)
+source: {ingress-controller}, destination: zeroday/zeroday[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload zeroday/zeroday[Deployment] added)'
 }

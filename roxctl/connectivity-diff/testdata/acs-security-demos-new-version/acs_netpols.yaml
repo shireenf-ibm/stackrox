@@ -2,26 +2,46 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: asset-cache-netpol
   namespace: frontend
 spec:
-  ingress: [] # blocking any ingress 
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 8080
+      protocol: TCP
   podSelector:
     matchLabels:
       app: asset-cache
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: blog-netpol
+  namespace: frontend
+spec:
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: blog
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
   name: catalog-netpol
   namespace: backend
 spec:
@@ -38,7 +58,7 @@ spec:
         matchLabels:
           app: reports
     ports:
-    - port: 9080       # changed to the new port
+    - port: 8080
       protocol: TCP
   podSelector:
     matchLabels:
@@ -46,14 +66,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: checkout-netpol
   namespace: backend
 spec:
@@ -78,7 +95,7 @@ spec:
     to:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: payments
+          name: payments
       podSelector:
         matchLabels:
           app: gateway
@@ -91,7 +108,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: frontend
+          name: frontend
       podSelector:
         matchLabels:
           app: webapp
@@ -104,14 +121,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: gateway-netpol
   namespace: payments
 spec:
@@ -122,7 +136,7 @@ spec:
     to:
     - podSelector:
         matchLabels:
-          app: mastercard-processor  # removed its deployment - the rules will not be considered
+          app: mastercard-processor
   - ports:
     - port: 8080
       protocol: TCP
@@ -130,6 +144,13 @@ spec:
     - podSelector:
         matchLabels:
           app: visa-processor
+  - ports:
+    - port: 8080
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app: visa-processor-v2
   - ports:
     - port: 5353
       protocol: UDP
@@ -139,7 +160,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: backend
+          name: backend
       podSelector:
         matchLabels:
           app: checkout
@@ -152,14 +173,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: mastercard-processor-netpol
   namespace: payments
 spec:
@@ -177,14 +195,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: notification-netpol
   namespace: backend
 spec:
@@ -202,14 +217,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: recommendation-netpol
   namespace: backend
 spec:
@@ -244,7 +256,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: frontend
+          name: frontend
       podSelector:
         matchLabels:
           app: webapp
@@ -257,20 +269,17 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: reports-netpol
   namespace: backend
 spec:
   egress:
   - ports:
-    - port: 9080  # changed 
+    - port: 8080
       protocol: TCP
     to:
     - podSelector:
@@ -292,7 +301,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: frontend
+          name: frontend
       podSelector:
         matchLabels:
           app: webapp
@@ -305,32 +314,36 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: shipping-netpol
   namespace: backend
 spec:
-  ingress: [] # removed
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: frontend
+      podSelector:
+        matchLabels:
+          app: webapp
+    ports:
+    - port: 8080
+      protocol: TCP
   podSelector:
     matchLabels:
       app: shipping
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: visa-processor-netpol
   namespace: payments
 spec:
@@ -348,14 +361,33 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: visa-processor-v2-netpol
+  namespace: payments
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: gateway
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: visa-processor-v2
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
   name: webapp-netpol
   namespace: frontend
 spec:
@@ -366,7 +398,7 @@ spec:
     to:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: backend
+          name: backend
       podSelector:
         matchLabels:
           app: checkout
@@ -376,7 +408,7 @@ spec:
     to:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: backend
+          name: backend
       podSelector:
         matchLabels:
           app: recommendation
@@ -386,11 +418,20 @@ spec:
     to:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: backend
+          name: backend
       podSelector:
         matchLabels:
           app: reports
-  # removed conn
+  - ports:
+    - port: 8080
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: backend
+      podSelector:
+        matchLabels:
+          app: shipping
   - ports:
     - port: 5353
       protocol: UDP
@@ -408,14 +449,31 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: zeroday-netpol
+  namespace: zeroday
+spec:
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: zeroday
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
   name: default-deny-in-namespace-backend
   namespace: backend
 spec:
@@ -423,14 +481,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: default-deny-in-namespace-frontend
   namespace: frontend
 spec:
@@ -438,14 +493,11 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   creationTimestamp: null
-  labels:
-    network-policy-buildtime-generator.stackrox.io/generated: "true"
   name: default-deny-in-namespace-payments
   namespace: payments
 spec:
@@ -453,3 +505,16 @@ spec:
   policyTypes:
   - Ingress
   - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: default-deny-in-namespace-zeroday
+  namespace: zeroday
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
