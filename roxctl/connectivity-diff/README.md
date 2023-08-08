@@ -59,10 +59,8 @@ Connectivity report from `dir1`:
 ```
 $ roxctl connectivity-map netpols-analysis-example-minimal/
 0.0.0.0-255.255.255.255 => default/frontend[Deployment] : TCP 8080
-default/backend[Deployment] => default/backend[Deployment] : All Connections
 default/frontend[Deployment] => 0.0.0.0-255.255.255.255 : UDP 53
 default/frontend[Deployment] => default/backend[Deployment] : TCP 9090
-default/frontend[Deployment] => default/frontend[Deployment] : All Connections
 ```
 
 Connectivity report from `dir2`:
@@ -70,10 +68,8 @@ Connectivity report from `dir2`:
 $ roxctl connectivity-map netpol-diff-example-minimal/
 0.0.0.0-255.255.255.255 => default/backend[Deployment] : TCP 9090
 0.0.0.0-255.255.255.255 => default/frontend[Deployment] : TCP 8080
-default/backend[Deployment] => default/backend[Deployment] : All Connections
 default/frontend[Deployment] => 0.0.0.0-255.255.255.255 : UDP 53
 default/frontend[Deployment] => default/backend[Deployment] : TCP 9090,UDP 53
-default/frontend[Deployment] => default/frontend[Deployment] : All Connections
 ```
 
 The semantic-diff report provides a summary of changed/added/removed connections from `dir2` with respect to allowed connections from `dir1`.
