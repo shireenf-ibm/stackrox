@@ -25,6 +25,12 @@ teardown() {
   assert_line --partial "accepts 2 arg(s), received 0"
 }
 
+@test "roxctl-release connectivity-diff only one arg" {
+  run roxctl-release connectivity-diff "dir1"
+  assert_failure
+  assert_line --partial "accepts 2 arg(s), received 1"
+}
+
 @test "roxctl-release connectivity-diff non existing dirs" {
   run roxctl-release connectivity-diff "$out_dir" "$out_dir"
   assert_failure
@@ -87,6 +93,26 @@ teardown() {
 }
 
 diff_tests_dir="${BATS_TEST_DIRNAME}/../../../../roxctl/connectivity-diff/testdata/"
+
+@test "roxctl-release connectivity-diff treats warning as error with strict when some yamls are not valid" {
+  dir1="${diff_tests_dir}/acs-zeroday-with-invalid-doc/"
+  assert_file_exist "${dir1}/deployment.yaml"
+  assert_file_exist "${dir1}/namespace.yaml"
+  assert_file_exist "${dir1}/route.yaml"
+  # without strict it ignores the invalid yaml and continue
+  run roxctl-release connectivity-diff "${dir1}" "${dir1}" --remove --output-file=/dev/null
+  assert_success
+  assert_output --partial 'WARN:'
+  assert_output --partial 'Yaml document is not a K8s resource'
+
+  # running with strict , a warning on invalid yaml doc is treated as error
+  run roxctl-release connectivity-diff "${dir1}" "${dir1}" --remove --output-file=/dev/null --strict
+  assert_failure
+  assert_output --partial 'WARN:'
+  assert_output --partial 'Yaml document is not a K8s resource'
+  assert_output --partial 'ERROR:'
+  assert_output --partial 'there were warnings during execution'
+}
 
 @test "roxctl-release connectivity-diff generates conns diff report between resources from two directories default output format" {
   dir1="${diff_tests_dir}/acs-security-demos/"
@@ -461,6 +487,76 @@ payments/gateway[Deployment],payments/visa-processor-v2[Deployment],No Connectio
 source: payments/gateway[Deployment], destination: payments/visa-processor-v2[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload payments/visa-processor-v2[Deployment] added)
 source: {ingress-controller}, destination: frontend/blog[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload frontend/blog[Deployment] added)
 source: {ingress-controller}, destination: zeroday/zeroday[Deployment], dir1:  No Connections, dir2: TCP 8080, diff-type: added (workload zeroday/zeroday[Deployment] added)'
+}
+
+@test "roxctl-release connectivity-diff generates conns diff report between resources from another two directories txt output" {
+  dir1="${diff_tests_dir}/netpol-analysis-example-minimal/"
+  dir2="${diff_tests_dir}/netpol-diff-example-minimal/"
+  # assert files exist in dir1
+  assert_file_exist "${dir1}/backend.yaml"
+  assert_file_exist "${dir1}/frontend.yaml"
+  assert_file_exist "${dir1}/netpols.yaml"
+  # assert files exist in dir2
+  assert_file_exist "${dir2}/backend.yaml"
+  assert_file_exist "${dir2}/frontend.yaml"
+  assert_file_exist "${dir2}/netpols.yaml"
+  echo "Writing diff report to ${ofile}" >&3
+  run roxctl-release connectivity-diff "${dir1}" "${dir2}" --output-format=txt
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # partial is used to filter WARN and INFO messages
+  assert_output --partial 'Connectivity diff:
+source: default/frontend[Deployment], destination: default/backend[Deployment], dir1:  TCP 9090, dir2: TCP 9090,UDP 53, diff-type: changed
+source: 0.0.0.0-255.255.255.255, destination: default/backend[Deployment], dir1:  No Connections, dir2: TCP 9090, diff-type: added'
+}
+
+@test "roxctl-release connectivity-diff generates conns diff report between resources from another two directories md output" {
+  dir1="${diff_tests_dir}/netpol-analysis-example-minimal/"
+  dir2="${diff_tests_dir}/netpol-diff-example-minimal/"
+  # assert files exist in dir1
+  assert_file_exist "${dir1}/backend.yaml"
+  assert_file_exist "${dir1}/frontend.yaml"
+  assert_file_exist "${dir1}/netpols.yaml"
+  # assert files exist in dir2
+  assert_file_exist "${dir2}/backend.yaml"
+  assert_file_exist "${dir2}/frontend.yaml"
+  assert_file_exist "${dir2}/netpols.yaml"
+  echo "Writing diff report to ${ofile}" >&3
+  run roxctl-release connectivity-diff "${dir1}" "${dir2}" --output-format=md
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # partial is used to filter WARN and INFO messages
+  assert_output --partial '| source | destination | dir1 | dir2 | diff-type |
+|--------|-------------|------|------|-----------|
+| default/frontend[Deployment] | default/backend[Deployment] | TCP 9090 | TCP 9090,UDP 53 | changed |
+| 0.0.0.0-255.255.255.255 | default/backend[Deployment] | No Connections | TCP 9090 | added |'
+}
+
+@test "roxctl-release connectivity-diff generates conns diff report between resources from another two directories csv output" {
+  dir1="${diff_tests_dir}/netpol-analysis-example-minimal/"
+  dir2="${diff_tests_dir}/netpol-diff-example-minimal/"
+  # assert files exist in dir1
+  assert_file_exist "${dir1}/backend.yaml"
+  assert_file_exist "${dir1}/frontend.yaml"
+  assert_file_exist "${dir1}/netpols.yaml"
+  # assert files exist in dir2
+  assert_file_exist "${dir2}/backend.yaml"
+  assert_file_exist "${dir2}/frontend.yaml"
+  assert_file_exist "${dir2}/netpols.yaml"
+  echo "Writing diff report to ${ofile}" >&3
+  run roxctl-release connectivity-diff "${dir1}" "${dir2}" --output-format=csv
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+    # partial is used to filter WARN and INFO messages
+  assert_output --partial 'source,destination,dir1,dir2,diff-type
+default/frontend[Deployment],default/backend[Deployment],TCP 9090,"TCP 9090,UDP 53",changed
+0.0.0.0-255.255.255.255,default/backend[Deployment],No Connections,TCP 9090,added'
 }
 
 write_yaml_to_file() {

@@ -32,7 +32,7 @@ Example run with output to `stdout`:
 
 Syntactic diff output:
 ```
-$ diff netpol-diff-example-minimal/netpols.yaml netpols-analysis-example-minimal/netpols.yaml
+$ diff netpol-diff-example-minimal/netpols.yaml netpol-analysis-example-minimal/netpols.yaml
 12c12
 <   - ports:
 ---
