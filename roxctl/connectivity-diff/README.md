@@ -21,7 +21,7 @@ Generate a file that allows users to visualize the **connectivity-diff** between
 ### Producing connectivity-diff from YAML manifests (network policies and workload resources)
 
 To produce a semantic-diff report, `roxctl connectivity-diff` requires two folders, `dir1` and `dir2`, each containing Kubernetes manifests, including network policies.
-The manifests must not be templated (e.g., Helm charts) to be considered. All YAML files that could be accepted by kubectl apply -f will be accepted as a valid input and searched by `roxctl connectivity-diff`.
+The manifests must not be templated (e.g., Helm charts) to be considered. All YAML files that could be accepted by `kubectl apply -f` will be accepted as a valid input and searched by `roxctl connectivity-diff`.
 
 
 
