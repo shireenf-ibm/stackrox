@@ -24,13 +24,41 @@ To produce a semantic-diff report, `roxctl connectivity-diff` requires two folde
 The manifests must not be templated (e.g., Helm charts) to be considered. All YAML files that could be accepted by kubectl apply -f will be accepted as a valid input and searched by `roxctl connectivity-diff`.
 
 
-Example run with output to `stdout`: 
-
 
 
 #### Syntactic vs semantic diff: 
 
-Syntactic diff output:
+The example shown below has two versions, where `dir1` is `netpol-analysis-example-minimal/` , and `dir2` is  `netpol-diff-example-minimal/`.
+The difference between the dirs consists of a small change in network policy `backend-netpol`.
+
+The policy from `dir1`:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: backend-netpol
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - port: 9090
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: backendservice
+  policyTypes:
+  - Ingress
+  - Egress
+status: {}
+
+```
+
+The change on `dir2` is an added `-` before the `ports` attribute. The syntactic diff output:
 ```
 $ diff netpol-diff-example-minimal/netpols.yaml netpol-analysis-example-minimal/netpols.yaml
 12c12
@@ -76,15 +104,15 @@ The semantic-diff report provides a summary of changed/added/removed connections
 
 
 ### Understanding the output
-
+Each line in the output represents an allowed connection that has been added/removed/changed on `dir2` with respect to `dir1`. 
 
 ## Parameters
 
 The output can be redirected to a file by using `--output-file` parameter.
 
-The output format can be set by using the --output-format parameter. Supported output formats: txt, md, csv. 
+The output format can be set by using the `--output-format` parameter. Supported output formats: `txt, md, csv`. 
 
-When running in a CI pipeline, roxctl connectivity-diff may benefit from the --fail option that stops the processing on the first encountered error.
+When running in a CI pipeline, roxctl `connectivity-diff` may benefit from the `--fail` option that stops the processing on the first encountered error.
 
-Using the --strict parameter produces an error "there were errors during execution" if any warnings appeared during the processing. Note that the combination of --strict and --fail will not stop on the first warning, as the interpretation of warnings as errors happens at the end of execution.
+Using the `--strict` parameter produces an error "there were errors during execution" if any warnings appeared during the processing. Note that the combination of `--strict` and `--fail` will not stop on the first warning, as the interpretation of warnings as errors happens at the end of execution.
 
