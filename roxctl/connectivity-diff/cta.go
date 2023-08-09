@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	defaultOutputFileNamePrefix = "diff_from_"
-	period                      = "."
+	defaultOutputFileNamePrefix = "connectivity_diff."
 	defaultOutputFormat         = "txt"
 )
 
@@ -76,7 +75,7 @@ func (cmd *diffNetpolCommand) printConnsDiff(connsDiff string) {
 }
 
 func (cmd *diffNetpolCommand) getDefaultFileName() string {
-	fileNamePrefix := defaultOutputFileNamePrefix + cmd.inputFolderPath1 + period
+	fileNamePrefix := defaultOutputFileNamePrefix
 	if cmd.outputFormat == "" {
 		return fileNamePrefix + defaultOutputFormat
 	}
