@@ -32,7 +32,7 @@ func Command(cliEnvironment environment.Environment) *cobra.Command {
 	c := &cobra.Command{
 		Use:   "connectivity-diff <folder-path1> <folder-path2>",
 		Short: "(Technology Preview) Report connectivity diff based on two directories of network policies and workload resources YAML manifests.",
-		Long: `Based on given two folders containing deployment, network policy and other networking resources YAMLs, will Report all differences in allowed connections between the directories. 
+		Long: `Based on given two folders containing Kubernetes workloads and network policy YAMLs, will report all differences in allowed connections between the directories. 
 		Will write to stdout if no output flags are provided.
 
 ** This is a Technology Preview feature **
