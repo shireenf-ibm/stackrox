@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blog
-  namespace: frontend 
+  namespace: frontend
   labels:
     app: blog
     app.kubernetes.io/part-of: blog
@@ -52,7 +52,7 @@ metadata:
   labels:
     app: blog
   name: blog-service
-  namespace: frontend 
+  namespace: frontend
 spec:
   ports:
     - port: 8080

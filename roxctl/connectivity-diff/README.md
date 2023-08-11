@@ -14,7 +14,7 @@ It is based on [NP-Guard's Network Policy Analyzer component](https://github.com
 
 ## Command Objective
 
-Generate a file that allows users to visualize the **connectivity-diff** between two versions of workloads and network policy manifests. 
+Generate a file that allows users to visualize the **connectivity-diff** between two versions of workloads and network policy manifests.
 
 ## Usage
 
@@ -26,7 +26,7 @@ The manifests must not be templated (e.g., Helm charts) to be considered. All YA
 
 
 
-#### Syntactic vs semantic diff: 
+#### Syntactic vs semantic diff:
 
 The example shown below has two versions, where `dir1` is `netpol-analysis-example-minimal/` , and `dir2` is  `netpol-diff-example-minimal/`.
 The difference between the dirs consists of a small change in network policy `backend-netpol`.
@@ -104,15 +104,14 @@ The semantic-diff report provides a summary of changed/added/removed connections
 
 
 ### Understanding the output
-Each line in the output represents an allowed connection that has been added/removed/changed on `dir2` with respect to `dir1`. 
+Each line in the output represents an allowed connection that has been added/removed/changed on `dir2` with respect to `dir1`.
 
 ## Parameters
 
 The output can be redirected to a file by using `--output-file` parameter.
 
-The output format can be set by using the `--output-format` parameter. Supported output formats: `txt, md, csv`. 
+The output format can be set by using the `--output-format` parameter. Supported output formats: `txt, md, csv`.
 
 When running in a CI pipeline, roxctl `connectivity-diff` may benefit from the `--fail` option that stops the processing on the first encountered error.
 
 Using the `--strict` parameter produces an error "there were errors during execution" if any warnings appeared during the processing. Note that the combination of `--strict` and `--fail` will not stop on the first warning, as the interpretation of warnings as errors happens at the end of execution.
-

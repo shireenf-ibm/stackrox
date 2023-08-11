@@ -1,8 +1,8 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: blog 
-  namespace: frontend 
+  name: blog
+  namespace: frontend
   labels:
     app: blog
 spec:

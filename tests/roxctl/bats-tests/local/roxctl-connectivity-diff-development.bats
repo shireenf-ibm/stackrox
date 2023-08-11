@@ -573,7 +573,7 @@ added,0.0.0.0-255.255.255.255,default/backend[Deployment],No Connections,TCP 909
   assert_file_exist "${dir1}/frontend.yaml"
   assert_file_exist "${dir1}/netpols.yaml"
   echo "Writing diff report to ${ofile}" >&3
-  run roxctl-development connectivity-diff --dir1="${dir1}" --dir2="${dir1}" 
+  run roxctl-development connectivity-diff --dir1="${dir1}" --dir2="${dir1}"
   assert_success
 
   echo "$output" > "$ofile"
