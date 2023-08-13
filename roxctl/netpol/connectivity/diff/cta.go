@@ -1,5 +1,5 @@
-// Package connectivitydiff provides primitives for command 'roxctl connectivity-diff'
-package connectivitydiff
+// Package diff provides primitives for command 'roxctl connectivity diff'
+package diff
 
 import (
 	"os"

@@ -1,4 +1,4 @@
-package connectivitydiff
+package diff
 
 import (
 	"errors"

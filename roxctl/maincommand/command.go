@@ -16,7 +16,6 @@ import (
 	"github.com/stackrox/rox/roxctl/common/environment"
 	"github.com/stackrox/rox/roxctl/common/flags"
 	"github.com/stackrox/rox/roxctl/completion"
-	connectivitydiff "github.com/stackrox/rox/roxctl/connectivity-diff"
 	connectivitymap "github.com/stackrox/rox/roxctl/connectivity-map"
 	"github.com/stackrox/rox/roxctl/declarativeconfig"
 	"github.com/stackrox/rox/roxctl/deployment"
@@ -24,6 +23,7 @@ import (
 	"github.com/stackrox/rox/roxctl/helm"
 	"github.com/stackrox/rox/roxctl/image"
 	"github.com/stackrox/rox/roxctl/logconvert"
+	connectivitydiff "github.com/stackrox/rox/roxctl/netpol"
 	"github.com/stackrox/rox/roxctl/scanner"
 	"github.com/stackrox/rox/roxctl/sensor"
 )

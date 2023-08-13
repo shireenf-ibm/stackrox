@@ -14,14 +14,14 @@ It is based on [NP-Guard's Network Policy Analyzer component](https://github.com
 
 ## Command Objective
 
-Generate a file that allows users to visualize the **connectivity-diff** between two versions of workloads and network policy manifests.
+Generate a file that allows users to visualize the **netpol connectivity diff** between two versions of workloads and network policy manifests.
 
 ## Usage
 
-### Producing connectivity-diff from YAML manifests (network policies and workload resources)
+### Producing connectivity diff from YAML manifests (network policies and workload resources)
 
-To produce a semantic-diff report, `roxctl connectivity-diff` requires two folders, `dir1` and `dir2`, each containing Kubernetes manifests, including network policies.
-The manifests must not be templated (e.g., Helm charts) to be considered. All YAML files that could be accepted by `kubectl apply -f` will be accepted as a valid input and searched by `roxctl connectivity-diff`.
+To produce a semantic-diff report, `roxctl netpol connectivity diff --dir1=<folder1> --dir2=<folder2>` requires two folders, `dir1` and `dir2`, each containing Kubernetes manifests, including network policies.
+The manifests must not be templated (e.g., Helm charts) to be considered. All YAML files that could be accepted by `kubectl apply -f` will be accepted as a valid input and searched by `roxctl netpol connectivity diff`.
 
 
 
@@ -112,6 +112,6 @@ The output can be redirected to a file by using `--output-file` parameter.
 
 The output format can be set by using the `--output-format` parameter. Supported output formats: `txt, md, csv`.
 
-When running in a CI pipeline, roxctl `connectivity-diff` may benefit from the `--fail` option that stops the processing on the first encountered error.
+When running in a CI pipeline, `roxctl netpol connectivity diff` may benefit from the `--fail` option that stops the processing on the first encountered error.
 
 Using the `--strict` parameter produces an error "there were errors during execution" if any warnings appeared during the processing. Note that the combination of `--strict` and `--fail` will not stop on the first warning, as the interpretation of warnings as errors happens at the end of execution.
