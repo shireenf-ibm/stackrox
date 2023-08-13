@@ -44,7 +44,7 @@ For more information about the support scope of Red Hat Technology Preview featu
 		Args: cobra.ExactArgs(0),
 		RunE: func(c *cobra.Command, args []string) error {
 			diffNetpolCmd.env.Logger().WarnfLn("This is a Technology Preview feature. Red Hat does not recommend using Technology Preview features in production.")
-			analyzer, err := diffNetpolCmd.construct(args)
+			analyzer, err := diffNetpolCmd.construct()
 			if err != nil {
 				return err
 			}
@@ -66,7 +66,7 @@ For more information about the support scope of Red Hat Technology Preview featu
 	return c
 }
 
-func (cmd *diffNetpolCommand) construct(args []string) (diffAnalyzer, error) {
+func (cmd *diffNetpolCommand) construct() (diffAnalyzer, error) {
 	var opts []npguard.DiffAnalyzerOption
 	if cmd.env != nil && cmd.env.Logger() != nil {
 		opts = append(opts, npguard.WithLogger(npg.NewLogger(cmd.env.Logger())))

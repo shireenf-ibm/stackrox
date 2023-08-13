@@ -183,7 +183,7 @@ func (d *diffAnalyzeNetpolTestSuite) TestDiffAnalyzeNetpol() {
 				env:                   env,
 			}
 
-			analyzer, err := diffNetpolCmd.construct([]string{})
+			analyzer, err := diffNetpolCmd.construct()
 			d.Assert().NoError(err)
 
 			err = diffNetpolCmd.validate()
