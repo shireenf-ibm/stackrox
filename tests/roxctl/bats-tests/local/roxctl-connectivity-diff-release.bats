@@ -29,14 +29,14 @@ teardown() {
   run roxctl-release connectivity-diff
   assert_failure
   assert_line --partial "ERROR:"
-  assert_line --partial "both directory paths dir1 and dir2 are require"
+  assert_line --partial "directory path dir1 is required"
 }
 
 @test "roxctl-release connectivity-diff only one input directory" {
   run roxctl-release connectivity-diff --dir1="dir1"
   assert_failure
   assert_line --partial "ERROR:"
-  assert_line --partial "both directory paths dir1 and dir2 are require"
+  assert_line --partial "directory path dir2 is required"
 }
 
 @test "roxctl-release connectivity-diff non existing dirs" {
