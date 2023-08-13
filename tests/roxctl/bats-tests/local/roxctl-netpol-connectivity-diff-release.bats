@@ -225,7 +225,7 @@ added,{ingress-controller},zeroday/zeroday[Deployment],No Connections,TCP 8080,w
   check_acs_security_demos_files ${dir1}
   # assert files exist in dir2
   check_acs_security_demos_new_version_files ${dir2}
- 
+
   echo "Writing diff report to ${ofile}" >&3
   run roxctl-release netpol connectivity diff --dir1="${dir1}" --dir2="${dir2}" --output-file="$out_dir/out.txt"
   assert_success
