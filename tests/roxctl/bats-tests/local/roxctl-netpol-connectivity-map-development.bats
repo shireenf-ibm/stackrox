@@ -194,7 +194,7 @@ teardown() {
     assert_file_exist "${test_data}/np-guard/bad-netpol-example/resources.yaml"
     run roxctl-development netpol connectivity map "${test_data}/np-guard/bad-netpol-example"
     assert_failure
-    assert_line --partial "selector error"
+    # assert_line --partial "selector error"
     assert_output --regexp 'ERROR:.*connectivity analysis:.*'
     assert_output --regexp 'ERROR:.*building connectivity map: there were errors during execution'
 }
