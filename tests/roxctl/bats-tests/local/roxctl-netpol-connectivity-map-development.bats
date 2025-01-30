@@ -605,6 +605,364 @@ hello-world/workload-a[Deployment] is not protected on Egress'
   assert_output "$normalized_expected_output"
 }
 
+@test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies" {
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
+
+  echo "Writing connlist report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo"
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='0.0.0.0-255.255.255.255 => bar/mybar[Pod] : All Connections
+0.0.0.0-255.255.255.255 => baz/mybaz[Pod] : All Connections
+0.0.0.0-255.255.255.255 => monitoring/mymonitoring[Pod] : All Connections
+bar/mybar[Pod] => 0.0.0.0-255.255.255.255 : All Connections
+bar/mybar[Pod] => baz/mybaz[Pod] : All Connections
+bar/mybar[Pod] => monitoring/mymonitoring[Pod] : All Connections
+baz/mybaz[Pod] => 0.0.0.0-255.255.255.255 : All Connections
+baz/mybaz[Pod] => monitoring/mymonitoring[Pod] : All Connections
+foo/myfoo[Pod] => 0.0.0.0-255.255.255.255 : All Connections
+foo/myfoo[Pod] => baz/mybaz[Pod] : All Connections
+foo/myfoo[Pod] => monitoring/mymonitoring[Pod] : All Connections
+monitoring/mymonitoring[Pod] => 0.0.0.0-255.255.255.255 : All Connections
+monitoring/mymonitoring[Pod] => baz/mybaz[Pod] : All Connections
+monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies md format" {
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
+
+  echo "Writing connlist report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=md
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='| src | dst | conn |
+|-----|-----|------|
+| 0.0.0.0-255.255.255.255 | bar/mybar[Pod] | All Connections |
+| 0.0.0.0-255.255.255.255 | baz/mybaz[Pod] | All Connections |
+| 0.0.0.0-255.255.255.255 | monitoring/mymonitoring[Pod] | All Connections |
+| bar/mybar[Pod] | 0.0.0.0-255.255.255.255 | All Connections |
+| bar/mybar[Pod] | baz/mybaz[Pod] | All Connections |
+| bar/mybar[Pod] | monitoring/mymonitoring[Pod] | All Connections |
+| baz/mybaz[Pod] | 0.0.0.0-255.255.255.255 | All Connections |
+| baz/mybaz[Pod] | monitoring/mymonitoring[Pod] | All Connections |
+| foo/myfoo[Pod] | 0.0.0.0-255.255.255.255 | All Connections |
+| foo/myfoo[Pod] | baz/mybaz[Pod] | All Connections |
+| foo/myfoo[Pod] | monitoring/mymonitoring[Pod] | All Connections |
+| monitoring/mymonitoring[Pod] | 0.0.0.0-255.255.255.255 | All Connections |
+| monitoring/mymonitoring[Pod] | baz/mybaz[Pod] | All Connections |
+| monitoring/mymonitoring[Pod] | foo/myfoo[Pod] | All Connections |'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies dot format" {
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
+
+  echo "Writing connlist report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=dot
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='digraph {
+        subgraph "cluster_bar" {
+                color="black"
+                fontcolor="black"
+                "bar/mybar[Pod]" [label="mybar[Pod]" color="blue" fontcolor="blue"]
+                label="bar"
+        }
+        subgraph "cluster_baz" {
+                color="black"
+                fontcolor="black"
+                "baz/mybaz[Pod]" [label="mybaz[Pod]" color="blue" fontcolor="blue"]
+                label="baz"
+        }
+        subgraph "cluster_foo" {
+                color="black"
+                fontcolor="black"
+                "foo/myfoo[Pod]" [label="myfoo[Pod]" color="blue" fontcolor="blue"]
+                label="foo"
+        }
+        subgraph "cluster_monitoring" {
+                color="black"
+                fontcolor="black"
+                "monitoring/mymonitoring[Pod]" [label="mymonitoring[Pod]" color="blue" fontcolor="blue"]
+                label="monitoring"
+        }
+        "0.0.0.0-255.255.255.255" [label="0.0.0.0-255.255.255.255" color="red2" fontcolor="red2"]
+        "0.0.0.0-255.255.255.255" -> "bar/mybar[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "0.0.0.0-255.255.255.255" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "0.0.0.0-255.255.255.255" -> "monitoring/mymonitoring[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "bar/mybar[Pod]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "bar/mybar[Pod]" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "bar/mybar[Pod]" -> "monitoring/mymonitoring[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "baz/mybaz[Pod]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "baz/mybaz[Pod]" -> "monitoring/mymonitoring[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "foo/myfoo[Pod]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "foo/myfoo[Pod]" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "foo/myfoo[Pod]" -> "monitoring/mymonitoring[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "monitoring/mymonitoring[Pod]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "monitoring/mymonitoring[Pod]" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "monitoring/mymonitoring[Pod]" -> "foo/myfoo[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+}'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies csv format" {
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
+
+  echo "Writing connlist report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=csv
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='src,dst,conn
+0.0.0.0-255.255.255.255,bar/mybar[Pod],All Connections
+0.0.0.0-255.255.255.255,baz/mybaz[Pod],All Connections
+0.0.0.0-255.255.255.255,monitoring/mymonitoring[Pod],All Connections
+bar/mybar[Pod],0.0.0.0-255.255.255.255,All Connections
+bar/mybar[Pod],baz/mybaz[Pod],All Connections
+bar/mybar[Pod],monitoring/mymonitoring[Pod],All Connections
+baz/mybaz[Pod],0.0.0.0-255.255.255.255,All Connections
+baz/mybaz[Pod],monitoring/mymonitoring[Pod],All Connections
+foo/myfoo[Pod],0.0.0.0-255.255.255.255,All Connections
+foo/myfoo[Pod],baz/mybaz[Pod],All Connections
+foo/myfoo[Pod],monitoring/mymonitoring[Pod],All Connections
+monitoring/mymonitoring[Pod],0.0.0.0-255.255.255.255,All Connections
+monitoring/mymonitoring[Pod],baz/mybaz[Pod],All Connections
+monitoring/mymonitoring[Pod],foo/myfoo[Pod],All Connections'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies json format" {
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
+  assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
+
+  echo "Writing connlist report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=json
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='[
+  {
+    "src": "0.0.0.0-255.255.255.255",
+    "dst": "bar/mybar[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "0.0.0.0-255.255.255.255",
+    "dst": "baz/mybaz[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "0.0.0.0-255.255.255.255",
+    "dst": "monitoring/mymonitoring[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "bar/mybar[Pod]",
+    "dst": "0.0.0.0-255.255.255.255",
+    "conn": "All Connections"
+  },
+  {
+    "src": "bar/mybar[Pod]",
+    "dst": "baz/mybaz[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "bar/mybar[Pod]",
+    "dst": "monitoring/mymonitoring[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "baz/mybaz[Pod]",
+    "dst": "0.0.0.0-255.255.255.255",
+    "conn": "All Connections"
+  },
+  {
+    "src": "baz/mybaz[Pod]",
+    "dst": "monitoring/mymonitoring[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "foo/myfoo[Pod]",
+    "dst": "0.0.0.0-255.255.255.255",
+    "conn": "All Connections"
+  },
+  {
+    "src": "foo/myfoo[Pod]",
+    "dst": "baz/mybaz[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "foo/myfoo[Pod]",
+    "dst": "monitoring/mymonitoring[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "monitoring/mymonitoring[Pod]",
+    "dst": "0.0.0.0-255.255.255.255",
+    "conn": "All Connections"
+  },
+  {
+    "src": "monitoring/mymonitoring[Pod]",
+    "dst": "baz/mybaz[Pod]",
+    "conn": "All Connections"
+  },
+  {
+    "src": "monitoring/mymonitoring[Pod]",
+    "dst": "foo/myfoo[Pod]",
+    "conn": "All Connections"
+  }
+]'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies" {
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
+  
+  echo "Writing exposure report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='0.0.0.0-255.255.255.255 => hello-world/workload-a[Deployment] : All Connections
+0.0.0.0-255.255.255.255 => hello-world/workload-b[Deployment] : All Connections
+hello-world/workload-b[Deployment] => 0.0.0.0-255.255.255.255 : All Connections
+hello-world/workload-b[Deployment] => hello-world/workload-a[Deployment] : TCP 9090
+
+Exposure Analysis Result:
+Egress Exposure:
+hello-world/workload-a[Deployment]      =>      new-ns/[pod with {app=new-app}] : TCP 80
+hello-world/workload-b[Deployment]      =>      0.0.0.0-255.255.255.255 : All Connections
+hello-world/workload-b[Deployment]      =>      entire-cluster : All Connections
+
+Ingress Exposure:
+hello-world/workload-a[Deployment]      <=      0.0.0.0-255.255.255.255 : All Connections
+hello-world/workload-a[Deployment]      <=      hello-world/[all pods] : TCP 9090
+hello-world/workload-b[Deployment]      <=      0.0.0.0-255.255.255.255 : All Connections
+hello-world/workload-b[Deployment]      <=      entire-cluster : All Connections
+
+Workloads not protected by network policies:
+hello-world/workload-b[Deployment] is not protected on Egress
+hello-world/workload-b[Deployment] is not protected on Ingress'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies md format" {
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
+  
+  echo "Writing exposure report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure --output-format=md
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='| src | dst | conn |
+|-----|-----|------|
+| 0.0.0.0-255.255.255.255 | hello-world/workload-a[Deployment] | All Connections |
+| 0.0.0.0-255.255.255.255 | hello-world/workload-b[Deployment] | All Connections |
+| hello-world/workload-b[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
+| hello-world/workload-b[Deployment] | hello-world/workload-a[Deployment] | TCP 9090 |
+## Exposure Analysis Result:
+### Egress Exposure:
+| src | dst | conn |
+|-----|-----|------|
+| hello-world/workload-a[Deployment] | new-ns/[pod with {app=new-app}] | TCP 80 |
+| hello-world/workload-b[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
+| hello-world/workload-b[Deployment] | entire-cluster | All Connections |
+
+### Ingress Exposure:
+| dst | src | conn |
+|-----|-----|------|
+| hello-world/workload-a[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
+| hello-world/workload-a[Deployment] | hello-world/[all pods] | TCP 9090 |
+| hello-world/workload-b[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
+| hello-world/workload-b[Deployment] | entire-cluster | All Connections |'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
+@test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies dot format" {
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
+  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
+  
+  echo "Writing exposure report to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure --output-format=dot
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  expected_output='digraph {
+        subgraph "cluster_hello_world" {
+                color="black"
+                fontcolor="black"
+                "all pods_in_hello-world" [label="all pods" color="red2" fontcolor="red2"]
+                "hello-world/workload-a[Deployment]" [label="workload-a[Deployment]" color="blue" fontcolor="blue"]
+                "hello-world/workload-b[Deployment]" [label="workload-b[Deployment]" color="blue" fontcolor="blue"]
+                label="hello-world"
+        }
+        subgraph "cluster_new_ns" {
+                color="red2"
+                fontcolor="red2"
+                "pod with {app=new-app}_in_new-ns" [label="pod with {app=new-app}" color="red2" fontcolor="red2"]
+                label="new-ns"
+        }
+        "0.0.0.0-255.255.255.255" [label="0.0.0.0-255.255.255.255" color="red2" fontcolor="red2"]
+        "entire-cluster" [label="entire-cluster" color="red2" fontcolor="red2" shape=diamond]
+        "0.0.0.0-255.255.255.255" -> "hello-world/workload-a[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "0.0.0.0-255.255.255.255" -> "hello-world/workload-b[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+        "all pods_in_hello-world" -> "hello-world/workload-a[Deployment]" [label="TCP 9090" color="darkorange2" fontcolor="darkgreen" weight=1 style=dashed]
+        "entire-cluster" -> "hello-world/workload-b[Deployment]" [label="All Connections" color="darkorange2" fontcolor="darkgreen" weight=1 style=dashed]
+        "hello-world/workload-a[Deployment]" -> "pod with {app=new-app}_in_new-ns" [label="TCP 80" color="darkorange4" fontcolor="darkgreen" weight=0.5 style=dashed]
+        "hello-world/workload-b[Deployment]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
+        "hello-world/workload-b[Deployment]" -> "entire-cluster" [label="All Connections" color="darkorange4" fontcolor="darkgreen" weight=0.5 style=dashed]
+        "hello-world/workload-b[Deployment]" -> "hello-world/workload-a[Deployment]" [label="TCP 9090" color="gold2" fontcolor="darkgreen" weight=1]
+}'
+  normalized_expected_output=$(normalize_whitespaces "$expected_output")
+  assert_output "$normalized_expected_output"
+}
+
 normalize_whitespaces() {
   echo "$1"| sed -e "s/[[:space:]]\+/ /g"
 }
