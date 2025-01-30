@@ -32,5 +32,4 @@ kind: Namespace
 metadata:
   name: monitoring
   labels:
-    kubernetes.io/metadata.name: monitoring     
-   
+    kubernetes.io/metadata.name: monitoring
