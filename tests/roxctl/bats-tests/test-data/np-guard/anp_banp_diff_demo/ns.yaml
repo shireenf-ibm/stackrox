@@ -33,4 +33,3 @@ metadata:
   name: monitoring
   labels:
     kubernetes.io/metadata.name: monitoring
-   
