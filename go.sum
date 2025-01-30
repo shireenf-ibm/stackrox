@@ -1180,8 +1180,8 @@ github.com/np-guard/cluster-topology-analyzer/v2 v2.3.0 h1:xCG4o7tO/MloIU5vo8sjX
 github.com/np-guard/cluster-topology-analyzer/v2 v2.3.0/go.mod h1:Xg979Vq4Z7eZa01X8XYzr8nPBD2tvNcbnF8Fkkeqv+c=
 github.com/np-guard/models v0.5.5 h1:NuXM6/C+iurEeQmXqiJKjLJsZxTC1zZ9sio7sMfsaXM=
 github.com/np-guard/models v0.5.5/go.mod h1:Cj2nHAECvIuNoEBHXyzvauf3jXYgLzjxuHH73COaazE=
-github.com/np-guard/netpol-analyzer v1.3.0 h1:4rXfDclDjvoKIVPldmtrxqUWfnYqIVbRb6+LcvlRFKs=
-github.com/np-guard/netpol-analyzer v1.3.0/go.mod h1:wY+LP8D9w6ktthTrNTBuqNWY41P/fSLgtVIeKsYsu5k=
+github.com/np-guard/netpol-analyzer v1.3.1 h1:xkvC1+Y+RO+eGvqGY1j4WrKDfO4WzfPC5BtesF099eU=
+github.com/np-guard/netpol-analyzer v1.3.1/go.mod h1:wY+LP8D9w6ktthTrNTBuqNWY41P/fSLgtVIeKsYsu5k=
 github.com/nwaples/rardecode v1.1.0 h1:vSxaY8vQhOcVr4mm5e8XllHWTiM4JF507A0Katqw7MQ=
 github.com/nwaples/rardecode v1.1.0/go.mod h1:5DzqNKiOdpKKBH87u8VlvAnPZMXcGRhxWkRpHbbfGS0=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=

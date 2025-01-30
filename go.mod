@@ -86,7 +86,7 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/np-guard/cluster-topology-analyzer/v2 v2.3.0
-	github.com/np-guard/netpol-analyzer v1.3.0
+	github.com/np-guard/netpol-analyzer v1.3.1
 	github.com/nxadm/tail v1.4.11
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/onsi/ginkgo/v2 v2.22.2
