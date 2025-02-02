@@ -851,7 +851,7 @@ monitoring/mymonitoring[Pod],foo/myfoo[Pod],All Connections'
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies" {
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
-  
+
   echo "Writing exposure report to ${ofile}" >&3
   run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure
   assert_success
@@ -887,7 +887,7 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies md format" {
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
-  
+
   echo "Writing exposure report to ${ofile}" >&3
   run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure --output-format=md
   assert_success
@@ -924,7 +924,7 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies dot format" {
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
   assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
-  
+
   echo "Writing exposure report to ${ofile}" >&3
   run roxctl-development netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure --output-format=dot
   assert_success

@@ -14,7 +14,7 @@ metadata:
   name: bar
   labels:
     security: internal
-    kubernetes.io/metadata.name: bar    
+    kubernetes.io/metadata.name: bar
 
 ---
 
@@ -22,7 +22,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: baz
-  labels:    
+  labels:
     kubernetes.io/metadata.name: baz
 
 ---

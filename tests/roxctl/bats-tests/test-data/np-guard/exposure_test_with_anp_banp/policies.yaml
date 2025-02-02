@@ -22,22 +22,22 @@ spec:
     action: "Allow"
     to:
     - pods:
-        namespaceSelector: 
+        namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: new-ns
         podSelector:
           matchLabels:
-            app: new-app          
+            app: new-app
     ports:
     - portNumber:
         port: 80
-        protocol: TCP    
+        protocol: TCP
   ingress:
   - name: "allow-tcp-9090-from-pods-in-existing-namespace"
     action: "Allow"
     from:
     - pods:
-        namespaceSelector: 
+        namespaceSelector:
           matchLabels:
             kubernetes.io/metadata.name: hello-world
     ports:
