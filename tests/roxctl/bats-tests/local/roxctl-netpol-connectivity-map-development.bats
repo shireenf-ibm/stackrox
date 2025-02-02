@@ -797,7 +797,7 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
-  # partial expected output contains graph edges 
+  # partial expected output contains graph edges
   output=$(normalize_whitespaces "$output")
   partial_expected_output='"0.0.0.0-255.255.255.255" -> "hello-world/workload-a[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "0.0.0.0-255.255.255.255" -> "hello-world/workload-b[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
