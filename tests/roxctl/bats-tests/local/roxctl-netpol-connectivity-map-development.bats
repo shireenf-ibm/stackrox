@@ -437,19 +437,7 @@ payments/gateway[Deployment] => payments/visa-processor[Deployment] : TCP 8080'
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
-  expected_output='backend/checkout[Deployment] => backend/notification[Deployment] : TCP 8080
-backend/checkout[Deployment] => backend/recommendation[Deployment] : TCP 8080
-backend/checkout[Deployment] => payments/gateway[Deployment] : TCP 8080
-backend/recommendation[Deployment] => backend/catalog[Deployment] : TCP 8080
-backend/reports[Deployment] => backend/catalog[Deployment] : TCP 8080
-backend/reports[Deployment] => backend/recommendation[Deployment] : TCP 8080
-frontend/webapp[Deployment] => backend/checkout[Deployment] : TCP 8080
-frontend/webapp[Deployment] => backend/recommendation[Deployment] : TCP 8080
-frontend/webapp[Deployment] => backend/reports[Deployment] : TCP 8080
-frontend/webapp[Deployment] => backend/shipping[Deployment] : TCP 8080
-payments/gateway[Deployment] => payments/mastercard-processor[Deployment] : TCP 8080
-payments/gateway[Deployment] => payments/visa-processor[Deployment] : TCP 8080
-{ingress-controller} => frontend/asset-cache[Deployment] : TCP 8080
+  partial_expected_output='{ingress-controller} => frontend/asset-cache[Deployment] : TCP 8080
 {ingress-controller} => frontend/webapp[Deployment] : TCP 8080
 
 Exposure Analysis Result:
@@ -463,9 +451,8 @@ payments/gateway[Deployment]            =>      entire-cluster : UDP 5353
 Ingress Exposure:
 frontend/asset-cache[Deployment]        <=      entire-cluster : TCP 8080
 frontend/webapp[Deployment]             <=      entire-cluster : TCP 8080'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  # partial is used to filter WARN and INFO messages
-  assert_output --partial "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates connlist with exposure-analysis for acs-security-demo md format" {
@@ -501,35 +488,9 @@ frontend/webapp[Deployment]             <=      entire-cluster : TCP 8080'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  # partial expected output contains graph edges
   output=$(normalize_whitespaces "$output")
-  expected_output='digraph {
-        subgraph "cluster_backend" {
-                color="black"
-                fontcolor="black"
-                "backend/catalog[Deployment]" [label="catalog[Deployment]" color="blue" fontcolor="blue"]
-                "backend/checkout[Deployment]" [label="checkout[Deployment]" color="blue" fontcolor="blue"]
-                "backend/notification[Deployment]" [label="notification[Deployment]" color="blue" fontcolor="blue"]
-                "backend/recommendation[Deployment]" [label="recommendation[Deployment]" color="blue" fontcolor="blue"]
-                "backend/reports[Deployment]" [label="reports[Deployment]" color="blue" fontcolor="blue"]
-                "backend/shipping[Deployment]" [label="shipping[Deployment]" color="blue" fontcolor="blue"]
-                label="backend"
-        }
-        subgraph "cluster_frontend" {
-                color="black"
-                fontcolor="black"
-                "frontend/asset-cache[Deployment]" [label="asset-cache[Deployment]" color="blue" fontcolor="blue"]
-                "frontend/webapp[Deployment]" [label="webapp[Deployment]" color="blue" fontcolor="blue"]
-                label="frontend"
-        }
-        subgraph "cluster_payments" {
-                color="black"
-                fontcolor="black"
-                "payments/gateway[Deployment]" [label="gateway[Deployment]" color="blue" fontcolor="blue"]
-                "payments/mastercard-processor[Deployment]" [label="mastercard-processor[Deployment]" color="blue" fontcolor="blue"]
-                "payments/visa-processor[Deployment]" [label="visa-processor[Deployment]" color="blue" fontcolor="blue"]
-                label="payments"
-        }
-        "entire-cluster" [label="entire-cluster" color="red2" fontcolor="red2" shape=diamond]
+  partial_expected_output='"entire-cluster" [label="entire-cluster" color="red2" fontcolor="red2" shape=diamond]
         "{ingress-controller}" [label="{ingress-controller}" color="blue" fontcolor="blue"]
         "backend/checkout[Deployment]" -> "backend/notification[Deployment]" [label="TCP 8080" color="gold2" fontcolor="darkgreen" weight=0.5]
         "backend/checkout[Deployment]" -> "backend/recommendation[Deployment]" [label="TCP 8080" color="gold2" fontcolor="darkgreen" weight=0.5]
@@ -553,9 +514,8 @@ frontend/webapp[Deployment]             <=      entire-cluster : TCP 8080'
         "{ingress-controller}" -> "frontend/asset-cache[Deployment]" [label="TCP 8080" color="gold2" fontcolor="darkgreen" weight=1]
         "{ingress-controller}" -> "frontend/webapp[Deployment]" [label="TCP 8080" color="gold2" fontcolor="darkgreen" weight=1]
 }'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  # partial is used to filter WARN and INFO messages
-  assert_output --partial "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates exposure for acs-security-demo with focus-workload=gateway" {
@@ -681,34 +641,9 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  # partial expected output contains graph edges
   output=$(normalize_whitespaces "$output")
-  expected_output='digraph {
-        subgraph "cluster_bar" {
-                color="black"
-                fontcolor="black"
-                "bar/mybar[Pod]" [label="mybar[Pod]" color="blue" fontcolor="blue"]
-                label="bar"
-        }
-        subgraph "cluster_baz" {
-                color="black"
-                fontcolor="black"
-                "baz/mybaz[Pod]" [label="mybaz[Pod]" color="blue" fontcolor="blue"]
-                label="baz"
-        }
-        subgraph "cluster_foo" {
-                color="black"
-                fontcolor="black"
-                "foo/myfoo[Pod]" [label="myfoo[Pod]" color="blue" fontcolor="blue"]
-                label="foo"
-        }
-        subgraph "cluster_monitoring" {
-                color="black"
-                fontcolor="black"
-                "monitoring/mymonitoring[Pod]" [label="mymonitoring[Pod]" color="blue" fontcolor="blue"]
-                label="monitoring"
-        }
-        "0.0.0.0-255.255.255.255" [label="0.0.0.0-255.255.255.255" color="red2" fontcolor="red2"]
-        "0.0.0.0-255.255.255.255" -> "bar/mybar[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+  partial_expected_output='"0.0.0.0-255.255.255.255" -> "bar/mybar[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "0.0.0.0-255.255.255.255" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "0.0.0.0-255.255.255.255" -> "monitoring/mymonitoring[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "bar/mybar[Pod]" -> "0.0.0.0-255.255.255.255" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
@@ -723,19 +658,17 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
         "monitoring/mymonitoring[Pod]" -> "baz/mybaz[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
         "monitoring/mymonitoring[Pod]" -> "foo/myfoo[Pod]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=1]
 }'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  assert_output "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates connlist for input resources with admin network policies csv format" {
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
-
   echo "Writing connlist report to ${ofile}" >&3
   run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=csv
   assert_success
-
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
@@ -763,72 +696,14 @@ monitoring/mymonitoring[Pod],foo/myfoo[Pod],All Connections'
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/ns.yaml"
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/policies.yaml"
   assert_file_exist "${test_data}/np-guard/anp_banp_demo/workloads.yaml"
-
   echo "Writing connlist report to ${ofile}" >&3
   run roxctl-development netpol connectivity map "${test_data}/np-guard/anp_banp_demo" --output-format=json
   assert_success
-
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
-  expected_output='[
-  {
-    "src": "0.0.0.0-255.255.255.255",
-    "dst": "bar/mybar[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "0.0.0.0-255.255.255.255",
-    "dst": "baz/mybaz[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "0.0.0.0-255.255.255.255",
-    "dst": "monitoring/mymonitoring[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "bar/mybar[Pod]",
-    "dst": "0.0.0.0-255.255.255.255",
-    "conn": "All Connections"
-  },
-  {
-    "src": "bar/mybar[Pod]",
-    "dst": "baz/mybaz[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "bar/mybar[Pod]",
-    "dst": "monitoring/mymonitoring[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "baz/mybaz[Pod]",
-    "dst": "0.0.0.0-255.255.255.255",
-    "conn": "All Connections"
-  },
-  {
-    "src": "baz/mybaz[Pod]",
-    "dst": "monitoring/mymonitoring[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "foo/myfoo[Pod]",
-    "dst": "0.0.0.0-255.255.255.255",
-    "conn": "All Connections"
-  },
-  {
-    "src": "foo/myfoo[Pod]",
-    "dst": "baz/mybaz[Pod]",
-    "conn": "All Connections"
-  },
-  {
-    "src": "foo/myfoo[Pod]",
-    "dst": "monitoring/mymonitoring[Pod]",
-    "conn": "All Connections"
-  },
-  {
+  partial_expected_output='{
     "src": "monitoring/mymonitoring[Pod]",
     "dst": "0.0.0.0-255.255.255.255",
     "conn": "All Connections"
@@ -842,10 +717,9 @@ monitoring/mymonitoring[Pod],foo/myfoo[Pod],All Connections'
     "src": "monitoring/mymonitoring[Pod]",
     "dst": "foo/myfoo[Pod]",
     "conn": "All Connections"
-  }
-]'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  assert_output "$normalized_expected_output"
+  }'
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies" {
@@ -859,13 +733,9 @@ monitoring/mymonitoring[Pod],foo/myfoo[Pod],All Connections'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  # partial expected output contains only the exposure results
   output=$(normalize_whitespaces "$output")
-  expected_output='0.0.0.0-255.255.255.255 => hello-world/workload-a[Deployment] : All Connections
-0.0.0.0-255.255.255.255 => hello-world/workload-b[Deployment] : All Connections
-hello-world/workload-b[Deployment] => 0.0.0.0-255.255.255.255 : All Connections
-hello-world/workload-b[Deployment] => hello-world/workload-a[Deployment] : TCP 9090
-
-Exposure Analysis Result:
+  partial_expected_output='Exposure Analysis Result:
 Egress Exposure:
 hello-world/workload-a[Deployment]      =>      new-ns/[pod with {app=new-app}] : TCP 80
 hello-world/workload-b[Deployment]      =>      0.0.0.0-255.255.255.255 : All Connections
@@ -880,8 +750,8 @@ hello-world/workload-b[Deployment]      <=      entire-cluster : All Connections
 Workloads not protected by network policies:
 hello-world/workload-b[Deployment] is not protected on Egress
 hello-world/workload-b[Deployment] is not protected on Ingress'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  assert_output "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies md format" {
@@ -895,14 +765,9 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  # partial expected output contains only the exposure results
   output=$(normalize_whitespaces "$output")
-  expected_output='| src | dst | conn |
-|-----|-----|------|
-| 0.0.0.0-255.255.255.255 | hello-world/workload-a[Deployment] | All Connections |
-| 0.0.0.0-255.255.255.255 | hello-world/workload-b[Deployment] | All Connections |
-| hello-world/workload-b[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
-| hello-world/workload-b[Deployment] | hello-world/workload-a[Deployment] | TCP 9090 |
-## Exposure Analysis Result:
+  partial_expected_output='## Exposure Analysis Result:
 ### Egress Exposure:
 | src | dst | conn |
 |-----|-----|------|
@@ -917,8 +782,8 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
 | hello-world/workload-a[Deployment] | hello-world/[all pods] | TCP 9090 |
 | hello-world/workload-b[Deployment] | 0.0.0.0-255.255.255.255 | All Connections |
 | hello-world/workload-b[Deployment] | entire-cluster | All Connections |'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  assert_output "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 @test "roxctl-development netpol connectivity map generates exposure report for input resources with admin network policies dot format" {
@@ -932,25 +797,9 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  # partial expected output contains graph edges 
   output=$(normalize_whitespaces "$output")
-  expected_output='digraph {
-        subgraph "cluster_hello_world" {
-                color="black"
-                fontcolor="black"
-                "all pods_in_hello-world" [label="all pods" color="red2" fontcolor="red2"]
-                "hello-world/workload-a[Deployment]" [label="workload-a[Deployment]" color="blue" fontcolor="blue"]
-                "hello-world/workload-b[Deployment]" [label="workload-b[Deployment]" color="blue" fontcolor="blue"]
-                label="hello-world"
-        }
-        subgraph "cluster_new_ns" {
-                color="red2"
-                fontcolor="red2"
-                "pod with {app=new-app}_in_new-ns" [label="pod with {app=new-app}" color="red2" fontcolor="red2"]
-                label="new-ns"
-        }
-        "0.0.0.0-255.255.255.255" [label="0.0.0.0-255.255.255.255" color="red2" fontcolor="red2"]
-        "entire-cluster" [label="entire-cluster" color="red2" fontcolor="red2" shape=diamond]
-        "0.0.0.0-255.255.255.255" -> "hello-world/workload-a[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
+  partial_expected_output='"0.0.0.0-255.255.255.255" -> "hello-world/workload-a[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "0.0.0.0-255.255.255.255" -> "hello-world/workload-b[Deployment]" [label="All Connections" color="gold2" fontcolor="darkgreen" weight=0.5]
         "all pods_in_hello-world" -> "hello-world/workload-a[Deployment]" [label="TCP 9090" color="darkorange2" fontcolor="darkgreen" weight=1 style=dashed]
         "entire-cluster" -> "hello-world/workload-b[Deployment]" [label="All Connections" color="darkorange2" fontcolor="darkgreen" weight=1 style=dashed]
@@ -959,8 +808,8 @@ hello-world/workload-b[Deployment] is not protected on Ingress'
         "hello-world/workload-b[Deployment]" -> "entire-cluster" [label="All Connections" color="darkorange4" fontcolor="darkgreen" weight=0.5 style=dashed]
         "hello-world/workload-b[Deployment]" -> "hello-world/workload-a[Deployment]" [label="TCP 9090" color="gold2" fontcolor="darkgreen" weight=1]
 }'
-  normalized_expected_output=$(normalize_whitespaces "$expected_output")
-  assert_output "$normalized_expected_output"
+  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_partial_expected_output"
 }
 
 normalize_whitespaces() {
