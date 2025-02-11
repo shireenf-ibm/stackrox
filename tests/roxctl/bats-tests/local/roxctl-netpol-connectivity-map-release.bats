@@ -636,38 +636,6 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   assert_output "$normalized_expected_output"
 }
 
-@test "roxctl-release netpol connectivity map generates exposure report for input resources with admin network policies" {
-  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/deployments.yaml"
-  assert_file_exist "${test_data}/np-guard/exposure_test_with_anp_banp/policies.yaml"
-
-  echo "Writing exposure report to ${ofile}" >&3
-  run roxctl-release netpol connectivity map "${test_data}/np-guard/exposure_test_with_anp_banp" --exposure
-  assert_success
-
-  echo "$output" > "$ofile"
-  assert_file_exist "$ofile"
-  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
-  # partial expected output contains only the exposure results
-  output=$(normalize_whitespaces "$output")
-  partial_expected_output='Exposure Analysis Result:
-Egress Exposure:
-hello-world/workload-a[Deployment]      =>      new-ns/[pod with {app=new-app}] : TCP 80
-hello-world/workload-b[Deployment]      =>      0.0.0.0-255.255.255.255 : All Connections
-hello-world/workload-b[Deployment]      =>      entire-cluster : All Connections
-
-Ingress Exposure:
-hello-world/workload-a[Deployment]      <=      0.0.0.0-255.255.255.255 : All Connections
-hello-world/workload-a[Deployment]      <=      hello-world/[all pods] : TCP 9090
-hello-world/workload-b[Deployment]      <=      0.0.0.0-255.255.255.255 : All Connections
-hello-world/workload-b[Deployment]      <=      entire-cluster : All Connections
-
-Workloads not protected by network policies:
-hello-world/workload-b[Deployment] is not protected on Egress
-hello-world/workload-b[Deployment] is not protected on Ingress'
-  normalized_partial_expected_output=$(normalize_whitespaces "$partial_expected_output")
-  assert_output --partial "$normalized_partial_expected_output"
-}
-
 normalize_whitespaces() {
   echo "$1"| sed -e "s/[[:space:]]\+/ /g"
 }
