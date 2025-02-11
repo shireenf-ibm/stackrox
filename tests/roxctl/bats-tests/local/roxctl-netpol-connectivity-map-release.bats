@@ -636,6 +636,48 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   assert_output "$normalized_expected_output"
 }
 
+@test "roxctl-release netpol connectivity map generates explainability report" {
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/backend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/frontend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/netpols.yaml"
+  echo "Writing explainability to ${ofile}" >&3
+  run roxctl-release netpol connectivity map "${test_data}/np-guard/netpols-analysis-example-minimal" --explain
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  # partial output - explaining connections between pair of the input peers 
+  partial_expected_output='CONNECTIONS BETWEEN default/backend[Deployment] => default/frontend[Deployment]:
+
+DENIED TCP:[1-8079,8081-65535] due to the following policies // rules:
+        EGRESS DIRECTION (DENIED)
+                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+        INGRESS DIRECTION (DENIED)
+                1) [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
+                2) [NP] default/frontend-netpol // Ingress rule #1 (ports not referenced)
+
+DENIED TCP:[8080] due to the following policies // rules:
+        EGRESS DIRECTION (DENIED)
+                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+        INGRESS DIRECTION (ALLOWED)
+                1) [NP] default/frontend-netpol // Ingress rule #1
+
+DENIED {SCTP,UDP}:[ALL PORTS] due to the following policies // rules:
+        EGRESS DIRECTION (DENIED)
+                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+        INGRESS DIRECTION (DENIED)
+                1) [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
+                2) [NP] default/frontend-netpol // Ingress rule #1 (protocols not referenced)'
+  normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_expected_output"
+}
+
+
 normalize_whitespaces() {
   echo "$1"| sed -e "s/[[:space:]]\+/ /g"
 }
