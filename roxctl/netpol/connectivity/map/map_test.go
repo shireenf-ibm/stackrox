@@ -36,6 +36,7 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 		outputFormat          string
 		removeOutputPath      bool
 		exposure              bool
+		explain               bool
 
 		expectedErrors   []string
 		expectedWarnings []string
@@ -166,6 +167,13 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 			outputToFile:     true,
 			exposure:         true,
 		},
+		"generate explainability report for connections": {
+			inputFolderPath:  "testdata/acs-security-demos",
+			expectedErrors:   []string{},
+			expectedWarnings: []string{},
+			outputToFile:     true,
+			explain:          true,
+		},
 	}
 
 	for name, tt := range cases {
@@ -181,6 +189,7 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 				focusWorkload:         tt.focusWorkload,
 				outputFormat:          tt.outputFormat,
 				exposure:              tt.exposure,
+				explain:               tt.explain,
 				env:                   env,
 			}
 
@@ -210,6 +219,10 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 				expectedOutputFileName := "output." + formatSuffix
 				if tt.exposure {
 					expectedOutputFileName = "exposure_output." + formatSuffix
+				}
+				if tt.explain {
+					d.Equal(formatSuffix, defaultOutputFormat)
+					expectedOutputFileName = "explain_output." + formatSuffix
 				}
 				expectedOutput, err := os.ReadFile(path.Join(tt.inputFolderPath, expectedOutputFileName))
 				d.Assert().NoError(err)
