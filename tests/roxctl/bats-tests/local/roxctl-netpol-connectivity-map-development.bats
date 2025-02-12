@@ -651,28 +651,27 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   # partial output - explaining connections between pair of the input peers 
   partial_expected_output='CONNECTIONS BETWEEN default/backend[Deployment] => default/frontend[Deployment]:
 
-DENIED TCP:[1-8079,8081-65535] due to the following policies // rules:
-        EGRESS DIRECTION (DENIED)
-                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
-                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
-        INGRESS DIRECTION (DENIED)
-                1) [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
-                2) [NP] default/frontend-netpol // Ingress rule #1 (ports not referenced)
+DENIED LIST:
+        DENIED TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies // rules:
+                EGRESS DIRECTION (DENIED)
+                        NP list:
+                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
 
-DENIED TCP:[8080] due to the following policies // rules:
-        EGRESS DIRECTION (DENIED)
-                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
-                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
-        INGRESS DIRECTION (ALLOWED)
-                1) [NP] default/frontend-netpol // Ingress rule #1
+                INGRESS DIRECTION (DENIED)
+                        NP list:
+                                - [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
+                                - [NP] default/frontend-netpol // Ingress rule #1 (protocols/ports not referenced)
 
-DENIED {SCTP,UDP}:[ALL PORTS] due to the following policies // rules:
-        EGRESS DIRECTION (DENIED)
-                1) [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
-                2) [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
-        INGRESS DIRECTION (DENIED)
-                1) [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
-                2) [NP] default/frontend-netpol // Ingress rule #1 (protocols not referenced)'
+
+        DENIED TCP:[8080] due to the following policies // rules:
+                EGRESS DIRECTION (DENIED)
+                        NP list:
+                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+
+                INGRESS DIRECTION (ALLOWED)
+                        [NP] default/frontend-netpol // Ingress rule #1'
   normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
   assert_output --partial "$normalized_expected_output"
 }
