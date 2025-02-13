@@ -649,28 +649,28 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
   # partial output - explaining connections between pair of the input peers 
-  partial_expected_output='CONNECTIONS BETWEEN default/backend[Deployment] => default/frontend[Deployment]:
+  partial_expected_output='Connections between default/backend[Deployment] => default/frontend[Deployment]:
 
-DENIED LIST:
-        DENIED TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies // rules:
-                EGRESS DIRECTION (DENIED)
+Denied list:
+        Denied TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies // rules:
+                Egress (Denied)
                         NP list:
                                 - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
                                 - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
 
-                INGRESS DIRECTION (DENIED)
+                Ingress (Denied)
                         NP list:
                                 - [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
                                 - [NP] default/frontend-netpol // Ingress rule #1 (protocols/ports not referenced)
 
 
-        DENIED TCP:[8080] due to the following policies // rules:
-                EGRESS DIRECTION (DENIED)
+        Denied TCP:[8080] due to the following policies // rules:
+                Egress (Denied)
                         NP list:
                                 - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
                                 - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
 
-                INGRESS DIRECTION (ALLOWED)
+                Ingress (Allowed)
                         [NP] default/frontend-netpol // Ingress rule #1'
   normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
   assert_output --partial "$normalized_expected_output"
