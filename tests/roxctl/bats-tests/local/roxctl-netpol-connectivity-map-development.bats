@@ -605,6 +605,47 @@ hello-world/workload-a[Deployment] is not protected on Egress'
   assert_output "$normalized_expected_output"
 }
 
+@test "roxctl-development netpol connectivity map generates explainability report" {
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/backend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/frontend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/netpols.yaml"
+  echo "Writing explainability to ${ofile}" >&3
+  run roxctl-development netpol connectivity map "${test_data}/np-guard/netpols-analysis-example-minimal" --explain
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+  # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  # partial output - explaining connections between pair of the input peers 
+  partial_expected_output='Connections between default/backend[Deployment] => default/frontend[Deployment]:
+
+Denied list:
+        Denied TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies // rules:
+                Egress (Denied)
+                        NP list:
+                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+
+                Ingress (Denied)
+                        NP list:
+                                - [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
+                                - [NP] default/frontend-netpol // Ingress rule #1 (protocols/ports not referenced)
+
+
+        Denied TCP:[8080] due to the following policies // rules:
+                Egress (Denied)
+                        NP list:
+                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
+                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+
+                Ingress (Allowed)
+                        [NP] default/frontend-netpol // Ingress rule #1'
+  normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
+  assert_output --partial "$normalized_expected_output"
+}
+
+
 normalize_whitespaces() {
   echo "$1"| sed -e "s/[[:space:]]\+/ /g"
 }
