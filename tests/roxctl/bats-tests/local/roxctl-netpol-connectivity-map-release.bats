@@ -415,7 +415,7 @@ payments/gateway[Deployment] => payments/visa-processor[Deployment] : TCP 8080'
   assert_success
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
-  assert_output --partial 'Workload abc does not exist in the input resources. Connectivity map report will be empty.'
+  assert_output --partial 'Workload abc does not exist in the input resources'
 }
 
 @test "roxctl-release netpol connectivity map generates connlist for acs-security-demo with focus-workload=ingress-controller" {
@@ -651,27 +651,27 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   # partial output - explaining connections between pair of the input peers 
   partial_expected_output='Connections between default/backend[Deployment] => default/frontend[Deployment]:
 
-Denied list:
-        Denied TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies // rules:
+Denied connections:
+        Denied TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies and rules:
                 Egress (Denied)
-                        NP list:
-                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
-                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+                        NetworkPolicy list:
+                                - NetworkPolicy default/backend-netpol selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
+                                - NetworkPolicy default/default-deny-in-namespace selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
 
                 Ingress (Denied)
-                        NP list:
-                                - [NP] default/default-deny-in-namespace // Ingress (captured but not selected by any Ingress rule - no rules defined)
-                                - [NP] default/frontend-netpol // Ingress rule #1 (protocols/ports not referenced)
+                        NetworkPolicy list:
+                                - NetworkPolicy default/default-deny-in-namespace selects default/frontend[Deployment], but default/backend[Deployment] is not selected by any Ingress rule (no rules defined)
+                                - NetworkPolicy default/frontend-netpol selects default/frontend[Deployment], and Ingress rule #1 selects default/backend[Deployment], but the protocols and ports do not match
 
 
-        Denied TCP:[8080] due to the following policies // rules:
+        Denied TCP:[8080] due to the following policies and rules:
                 Egress (Denied)
-                        NP list:
-                                - [NP] default/backend-netpol // Egress (captured but not selected by any Egress rule - no rules defined)
-                                - [NP] default/default-deny-in-namespace // Egress (captured but not selected by any Egress rule - no rules defined)
+                        NetworkPolicy list:
+                                - NetworkPolicy default/backend-netpol selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
+                                - NetworkPolicy default/default-deny-in-namespace selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
 
                 Ingress (Allowed)
-                        [NP] default/frontend-netpol // Ingress rule #1'
+                        NetworkPolicy default/frontend-netpol allows connection by Ingress rule #1'
   normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
   assert_output --partial "$normalized_expected_output"
 }
