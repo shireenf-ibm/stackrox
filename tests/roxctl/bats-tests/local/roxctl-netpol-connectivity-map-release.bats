@@ -648,7 +648,7 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   assert_file_exist "$ofile"
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
-  # partial output - explaining connections between pair of the input peers 
+  # partial output - explaining connections between pair of the input peers
   partial_expected_output='Connections between default/backend[Deployment] => default/frontend[Deployment]:
 
 Denied connections:
