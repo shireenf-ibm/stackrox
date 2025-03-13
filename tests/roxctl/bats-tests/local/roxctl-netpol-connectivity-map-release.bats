@@ -676,7 +676,6 @@ Denied connections:
   assert_output --partial "$normalized_expected_output"
 }
 
-
 normalize_whitespaces() {
   echo "$1"| sed -e "s/[[:space:]]\+/ /g"
 }
