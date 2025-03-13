@@ -649,29 +649,29 @@ monitoring/mymonitoring[Pod] => foo/myfoo[Pod] : All Connections'
   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
   # partial output - explaining connections between pair of the input peers
-  partial_expected_output='Connections between default/backend[Deployment] => default/frontend[Deployment]:
+  partial_expected_output="""Connections between default/backend[Deployment] => default/frontend[Deployment]:
 
 Denied connections:
         Denied TCP:[1-8079,8081-65535], UDP, SCTP due to the following policies and rules:
                 Egress (Denied)
                         NetworkPolicy list:
-                                - NetworkPolicy default/backend-netpol selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
-                                - NetworkPolicy default/default-deny-in-namespace selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
+                                - NetworkPolicy 'default/backend-netpol' selects default/backend[Deployment], but default/frontend[Deployment] is not allowed by any Egress rule (no rules defined)
+                                - NetworkPolicy 'default/default-deny-in-namespace' selects default/backend[Deployment], but default/frontend[Deployment] is not allowed by any Egress rule (no rules defined)
 
                 Ingress (Denied)
                         NetworkPolicy list:
-                                - NetworkPolicy default/default-deny-in-namespace selects default/frontend[Deployment], but default/backend[Deployment] is not selected by any Ingress rule (no rules defined)
-                                - NetworkPolicy default/frontend-netpol selects default/frontend[Deployment], and Ingress rule #1 selects default/backend[Deployment], but the protocols and ports do not match
+                                - NetworkPolicy 'default/default-deny-in-namespace' selects default/frontend[Deployment], but default/backend[Deployment] is not allowed by any Ingress rule (no rules defined)
+                                - NetworkPolicy 'default/frontend-netpol' selects default/frontend[Deployment], and Ingress rule #1 selects default/backend[Deployment], but the protocols and ports do not match
 
 
         Denied TCP:[8080] due to the following policies and rules:
                 Egress (Denied)
                         NetworkPolicy list:
-                                - NetworkPolicy default/backend-netpol selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
-                                - NetworkPolicy default/default-deny-in-namespace selects default/backend[Deployment], but default/frontend[Deployment] is not selected by any Egress rule (no rules defined)
+                                - NetworkPolicy 'default/backend-netpol' selects default/backend[Deployment], but default/frontend[Deployment] is not allowed by any Egress rule (no rules defined)
+                                - NetworkPolicy 'default/default-deny-in-namespace' selects default/backend[Deployment], but default/frontend[Deployment] is not allowed by any Egress rule (no rules defined)
 
                 Ingress (Allowed)
-                        NetworkPolicy default/frontend-netpol allows connection by Ingress rule #1'
+                        NetworkPolicy 'default/frontend-netpol' allows connections by Ingress rule #1"""
   normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
   assert_output --partial "$normalized_expected_output"
 }
