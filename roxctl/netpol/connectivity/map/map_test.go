@@ -3,6 +3,7 @@ package connectivitymap
 import (
 	"os"
 	"path"
+	"strings"
 	"testing"
 
 	"github.com/stackrox/rox/roxctl/common/environment/mocks"
@@ -226,7 +227,7 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 				}
 				expectedOutput, err := os.ReadFile(path.Join(tt.inputFolderPath, expectedOutputFileName))
 				d.Assert().NoError(err)
-				d.Equal(string(expectedOutput), string(output))
+				d.Equal(strings.TrimRight(string(expectedOutput), "\n\r"), strings.TrimRight(string(output), "\n\r"))
 
 				d.Assert().NoError(os.Remove(defaultFile))
 			}

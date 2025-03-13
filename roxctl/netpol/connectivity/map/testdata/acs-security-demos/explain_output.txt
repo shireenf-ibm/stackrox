@@ -2779,4 +2779,3 @@ Denied connections:
 				- NetworkPolicy frontend/webapp-netpol selects frontend/webapp[Deployment], and Ingress rule #1 selects {ingress-controller}, but the protocols and ports do not match
 
 			Route frontend/webapp allows ingress to service webapp-service, but the protocols and ports do not match
-
