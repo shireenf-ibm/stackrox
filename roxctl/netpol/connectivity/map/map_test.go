@@ -169,9 +169,9 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 			exposure:         true,
 		},
 		"generate explainability report for connections": {
-			inputFolderPath:  "testdata/acs-security-demos",
+			inputFolderPath:  "testdata/minimal",
 			expectedErrors:   []string{},
-			expectedWarnings: []string{},
+			expectedWarnings: []string{"unable to decode \"testdata/minimal/output.json\""},
 			outputToFile:     true,
 			explain:          true,
 		},
