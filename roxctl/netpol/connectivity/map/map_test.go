@@ -223,7 +223,7 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 				}
 				if tt.explain {
 					d.Equal(formatSuffix, defaultOutputFormat)
-					expectedOutputFileName = "explain_output.txt" 
+					expectedOutputFileName = "explain_output.txt"
 				}
 				expectedOutput, err := os.ReadFile(path.Join(tt.inputFolderPath, expectedOutputFileName))
 				d.Assert().NoError(err)
