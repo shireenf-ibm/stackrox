@@ -66,21 +66,11 @@ func (cmd *Cmd) RunE(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	warns, errs := npg.HandleNPGuardErrors(analyzer.Errors())
-	if err = cmd.summarizeAnalyzerErrors(warns, errs); err != nil {
-		return err
-	}
 	if err := cmd.validate(); err != nil {
 		return err
 	}
-	warns, errs = cmd.analyze(analyzer)
-	return cmd.summarizeAnalyzerErrors(warns, errs)
-}
-
-// summarizeAnalyzerErrors summarizes errors of the constructed analyzer;
-// called once after constructing the analyzer and once after analyzing as at each stage the analyzer may has warnings/errors
-func (cmd *Cmd) summarizeAnalyzerErrors(warns, errs []error) error {
-	err := npg.SummarizeErrors(warns, errs, cmd.treatWarningsAsErrors, cmd.env.Logger())
+	warns, errs := cmd.analyze(analyzer)
+	err = npg.SummarizeErrors(warns, errs, cmd.treatWarningsAsErrors, cmd.env.Logger())
 	if err != nil {
 		return errors.Wrap(err, "building connectivity map")
 	}

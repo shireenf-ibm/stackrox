@@ -67,10 +67,13 @@ func (cmd *Cmd) analyze(analyzer netpolAnalyzer) (w []error, e []error) {
 	if err != nil {
 		return warns, append(errs, errors.Wrap(err, "formatting connectivity list"))
 	}
+	w, e = npg.HandleNPGuardErrors(analyzer.Errors())
+	if cmd.stopOnFirstError && (len(e) > 0 || (len(w) > 0 && cmd.treatWarningsAsErrors)) {
+		return w, e
+	}
 	if err := cmd.ouputConnList(connsStr); err != nil {
 		return warns, append(errs, errors.Wrap(err, "writing connectivity result"))
 	}
-	w, e = npg.HandleNPGuardErrors(analyzer.Errors())
 	return append(warns, w...), append(errs, e...)
 }
 
