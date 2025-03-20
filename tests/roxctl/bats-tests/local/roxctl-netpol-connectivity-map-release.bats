@@ -416,6 +416,7 @@ payments/gateway[Deployment] => payments/visa-processor[Deployment] : TCP 8080'
   echo "$output" > "$ofile"
   assert_file_exist "$ofile"
   assert_output --partial 'Workload abc does not exist in the input resources'
+  assert_output --partial 'Connectivity map report will be empty.'
 }
 
 @test "roxctl-release netpol connectivity map generates connlist for acs-security-demo with focus-workload=ingress-controller" {
@@ -674,6 +675,31 @@ Denied connections:
                         NetworkPolicy 'default/frontend-netpol' allows connections by Ingress rule #1"""
   normalized_expected_output=$(normalize_whitespaces "$partial_expected_output")
   assert_output --partial "$normalized_expected_output"
+}
+
+@test "roxctl-release netpol connectivity map generate regular md connlist with flag explain and md format" {
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/backend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/frontend.yaml"
+  assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/netpols.yaml"
+  echo "Writing explainability to ${ofile}" >&3
+  run roxctl-release netpol connectivity map "${test_data}/np-guard/netpols-analysis-example-minimal" --explain --output-format=md
+  assert_success
+
+  echo "$output" > "$ofile"
+  assert_file_exist "$ofile"
+   # normalizing tabs and whitespaces in output so it will be easier to compare with expected
+  output=$(normalize_whitespaces "$output")
+  # output contains a warn since explain is supported only with txt format
+  expected_warn=$(normalize_whitespaces "WARN:   explainability is available only with txt format. A connlist without explainability will be printed for the input format md")
+  # output contains regular connlist
+  expected_connlist='| src | dst | conn |
+|-----|-----|------|
+| 0.0.0.0-255.255.255.255 | default/frontend[Deployment] | TCP 8080 |
+| default/backend[Deployment] | default/frontend[Deployment] |  |
+| default/frontend[Deployment] | 0.0.0.0-255.255.255.255 | UDP 53 |
+| default/frontend[Deployment] | default/backend[Deployment] | TCP 9090 |'
+normalized_expected_connlist=$(normalize_whitespaces "$expected_connlist")
+assert_output --partial "$normalized_expected_connlist"
 }
 
 normalize_whitespaces() {

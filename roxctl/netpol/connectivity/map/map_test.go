@@ -145,6 +145,7 @@ func (d *connectivityMapTestSuite) TestAnalyzeNetpol() {
 			expectedWarnings: []string{
 				"Route resource frontend/asset-cache specified workload frontend/asset-cache[Deployment] as a backend, but network policies are blocking ingress connections from an arbitrary in-cluster source to this workload. Connectivity map will not include a possibly allowed connection between the ingress controller and this workload.",
 				"Route resource frontend/webapp specified workload frontend/webapp[Deployment] as a backend, but network policies are blocking ingress connections from an arbitrary in-cluster source to this workload. Connectivity map will not include a possibly allowed connection between the ingress controller and this workload.",
+				"Connectivity analysis found no allowed connectivity between pairs from the configured workloads or external IP-blocks",
 			},
 		},
 		"output should be written to default json output file": {
