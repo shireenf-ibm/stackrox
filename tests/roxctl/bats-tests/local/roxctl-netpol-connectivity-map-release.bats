@@ -690,7 +690,8 @@ Denied connections:
    # normalizing tabs and whitespaces in output so it will be easier to compare with expected
   output=$(normalize_whitespaces "$output")
   # output contains a warn since explain is supported only with txt format
-  expected_warn=$(normalize_whitespaces "WARN:   explainability is available only with txt format. A connlist without explainability will be printed for the input format md")
+  expected_warn=$(normalize_whitespaces "WARN:   explain flag is supported only with txt output format; ignoring this flag for the required output format md")
+  assert_output --partial "$expected_warn"
   # output contains regular connlist
   expected_connlist='| src | dst | conn |
 |-----|-----|------|
