@@ -692,7 +692,7 @@ Denied connections:
   # output contains a warn since explain is supported only with txt format
   expected_warn=$(normalize_whitespaces "WARN:   explain flag is supported only with txt output format; ignoring this flag for the required output format md")
   assert_output --partial "$expected_warn"
-  # output contains regular connlist
+  # output consists of connectivity map without explanations in md format 
   expected_connlist='| src | dst | conn |
 |-----|-----|------|
 | 0.0.0.0-255.255.255.255 | default/frontend[Deployment] | TCP 8080 |
