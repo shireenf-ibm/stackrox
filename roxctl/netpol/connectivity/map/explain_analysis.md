@@ -148,4 +148,5 @@ for each allowed connection which egress networking resource(s) selects the `src
 - it also specifies the networking resource(s) and reasons for the denied connections from `src` to `dst` under internal section `Denied connections` on both egress and ingress directions
 
 
-2. `src`=>`dst` connections which are not captured by policies and derived from system-default allow all are grouped under a separate section: `All Connections due to the system default (Allow all)` (if found)
+2. `src`=>`dst` connections which are not captured by policies and derived from system-default "allow all" are grouped under a separate section: `All Connections due to the system default (Allow all)` (if found)
+
