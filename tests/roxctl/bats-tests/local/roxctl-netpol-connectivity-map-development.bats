@@ -677,7 +677,7 @@ Denied connections:
   assert_output --partial "$normalized_expected_output"
 }
 
-@test "roxctl-development netpol connectivity map generate regular md connlist with flag explain and md format" {
+@test "roxctl-development netpol connectivity map ignores explain flag for unsupported md format with warning" {
   assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/backend.yaml"
   assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/frontend.yaml"
   assert_file_exist "${test_data}/np-guard/netpols-analysis-example-minimal/netpols.yaml"
