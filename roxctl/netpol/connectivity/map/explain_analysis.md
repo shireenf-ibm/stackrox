@@ -138,7 +138,8 @@ Denied connections:
 
 #### Understanding the output
 
-The results of explain analysis replace the regular connectivity list with more explanation about the connections between pairs of input workloads.
+The results of `explain` analysis extend the simple `connectivity map` with explanations about the connections between pairs of input workloads.
+
 1. Connections which are concluded from policies' rules are reported in a section `Specific connections and their reasons`;
 in this section, for each `src` => `dst` pair :
 - if there are allowed connections from `src` to `dst`,it reports under internal section `Allowed connections`
