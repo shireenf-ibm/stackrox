@@ -102,7 +102,7 @@ If the input `focus-workload` value speifies a workload name that does not exist
 
 The `--exposure` parameter prints the permitted connectivity with additional information of potential permitted connectivity to workload entities that may be matched by policy rules, but do not have a match in the input manifests. More details about exposure analysis and its output are [here](./exposure_analysis.md)
 
-The `--explain` parameter provides additional information of what resources (such as network policies, admin network policies, routes and more) contributed to allowing or denying a connectivity between any pair of nodes. More details about explain analysis and its output are [here](./explain_analysis.md)
+The `--explain` parameter provides additional information of what resources (such as network policies, admin network policies, routes and more) contribute to allowing or denying a connection between any pair of workloads and/or IP blocks. More details about `explain` analysis and its output are [here](./explain_analysis.md)
 
 When running in a CI pipeline, `roxctl netpol connectivity map` may benefit from the `--fail` option that stops the processing on the first encountered error.
 
