@@ -16,9 +16,7 @@ Example run with `txt` output to `stdout`:
 $ roxctl netpol connectivity map --explain roxctl/netpol/connectivity/map/testdata/minimal
 ```
 ```txt
-########################################## 
-# Specific connections and their reasons #
-########################################## 
+# Specific connections and their reasons # 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 Connections between 0.0.0.0-255.255.255.255 => default/backend[Deployment]:
 
