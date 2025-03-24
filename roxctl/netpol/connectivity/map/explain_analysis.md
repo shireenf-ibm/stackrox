@@ -1,7 +1,8 @@
 # `explain` analysis
 
 
-The goal of explain analysis is to provide additional connectivity information, specifying the resources (such as network policies, admin network policies, routes and more) that contributed to allowing or denying a connectivity between any pair of input workloads.
+The goal of `explain` analysis is to provide additional connectivity information, specifying the resources (such as network policies, admin network policies, routes and more) that contribute to allowing or denying a connection between any pair of input workloads.
+
 
 The report can help testing whether the configured resources induce connectivity as expected, and give hints to where the resources may be changed to achieve the desired result.
 
