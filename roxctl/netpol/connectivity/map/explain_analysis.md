@@ -6,7 +6,8 @@ The goal of `explain` analysis is to provide additional connectivity information
 
 The report can help testing whether the configured resources induce connectivity as expected, and give hints to where the resources may be changed to achieve the desired result.
 
-Explain-analysis is supported with `txt` output format only.
+The `explain` analysis is supported with `txt` output format only.
+
 
 ### Textual Output Example
 
